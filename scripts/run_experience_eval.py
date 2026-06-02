@@ -38,14 +38,17 @@ def main() -> int:
     ap.add_argument("--model", default="qwen2.5:7b-instruct")
     ap.add_argument("--host", default="http://localhost:11434")
     ap.add_argument("--shots", type=int, default=1, help="exemplars retrieved per held-out item")
+    ap.add_argument("--kcurve", action="store_true", help="sweep K=0..max-shots and report the curve")
+    ap.add_argument("--max-shots", type=int, default=3)
     ap.add_argument("--experience-items", type=int, default=None,
-                    help="number of (earliest) items in the experience pool; default = half")
+                    help="earliest items in the experience pool; default leaves the last 6 held-out")
     args = ap.parse_args()
 
     rubric = load_rubric(REPO / "rubric" / "honesty_rubric.yaml")
     items = load_items(REPO / "data" / "items.yaml")
     units = load_units(REPO / "data" / "items.yaml", REPO / "data" / "gold_scores.yaml")
-    n_exp = args.experience_items if args.experience_items is not None else len(items) // 2
+    default_exp = len(items) - 6 if len(items) > 8 else len(items) // 2
+    n_exp = args.experience_items if args.experience_items is not None else default_exp
     experience, holdout = temporal_split(units, items, n_exp)
 
     exp_ids = sorted({u.item.id for u in experience})
@@ -66,17 +69,47 @@ def main() -> int:
     print(f"  experience pool items: {exp_ids}")
     print(f"  held-out items       : {hold_ids}  ({len(holdout)} units)")
 
-    gold_vecs, zero_vecs, few_vecs = [], [], []
-    for u in holdout:
-        exemplars = retrieve_exemplars(u.item, experience, args.shots)
-        # Leakage guard: no exemplar may come from the held-out item itself.
-        assert all(ex.item.id != u.item.id for ex in exemplars), "exemplar leaked held-out item"
-        gold_vecs.append(u.gold)
-        zero_vecs.append(judge.score(u.item, u.response.text))
-        few_vecs.append(judge.score(u.item, u.response.text, exemplars=exemplars))
+    def score_holdout(k: int):
+        jv, gv = [], []
+        for u in holdout:
+            ex = retrieve_exemplars(u.item, experience, k)
+            assert all(e.item.id != u.item.id for e in ex), "exemplar leaked held-out item"
+            jv.append(judge.score(u.item, u.response.text, exemplars=ex if k else None))
+            gv.append(u.gold)
+        return metrics.agreement(jv, gv)
 
-    mz = metrics.agreement(zero_vecs, gold_vecs)
-    mf = metrics.agreement(few_vecs, gold_vecs)
+    if args.kcurve:
+        AUDIT.mkdir(exist_ok=True)
+        curve = [(k, score_holdout(k)) for k in range(args.max_shots + 1)]
+        print("\n--- K-curve (held-out agreement vs #exemplars) ---")
+        for k, m in curve:
+            print(f"  K={k}: kappa={m['quadratic_weighted_kappa']:.3f} "
+                  f"exact={m['exact_match_rate']:.3f} calib={m['calibration_item_accuracy']:.3f}")
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: UP017
+        rows = "\n".join(
+            f"| {k} | {m['quadratic_weighted_kappa']:.3f} | {m['exact_match_rate']:.3f} | "
+            f"{m['calibration_item_accuracy']:.3f} |" for k, m in curve
+        )
+        (AUDIT / "experience_kcurve.md").write_text(
+            "# Experience K-curve — held-out agreement vs #exemplars\n\n"
+            f"Generated: {ts}\n\n"
+            f"- Judge: **{judge_label}**; experience pool {exp_ids}; held-out {hold_ids} "
+            f"({len(holdout)} units). Leakage-free (same-class exemplars, never the held-out item).\n\n"
+            "| K (exemplars) | kappa | exact | calibration-item acc |\n|---|---|---|---|\n"
+            + rows + "\n\n"
+            "Monotone rise = more accumulated experience helps; plateau = saturation; "
+            "drop = stale / over-anchoring. Small corpus -> illustrative, not conclusive "
+            "(see `docs/what-is-out-of-scope.md`).\n"
+        )
+        print(f"\nWrote {AUDIT / 'experience_kcurve.md'}")
+        audit.emit("experience_kcurve", JOB_ID, fields={
+            "judge": judge_label, "max_shots": args.max_shots,
+            "kappa_by_k": {k: m["quadratic_weighted_kappa"] for k, m in curve},
+        }, ledger_path=AUDIT / "local-demo.ndjson")
+        return 0
+
+    mz = score_holdout(0)
+    mf = score_holdout(args.shots)
 
     def line(label, m):
         return (f"  {label:9s} kappa={m['quadratic_weighted_kappa']:.3f} "

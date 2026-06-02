@@ -1,36 +1,36 @@
 # Honesty-rubric eval — judge vs expert agreement
 
-Generated: 2026-06-02T23:30:38Z
+Generated: 2026-06-02T23:40:54Z
 
 - Judge: **heuristic** (heuristic baseline ships; LLM judge pluggable via --judge ollama).
-- Units: 15 (item × response), 12 rubric items each.
+- Units: 33 (item × response), 12 rubric items each.
 
 ## Agreement (the scalable-oversight metric)
 
 | Metric | Value |
 |---|---|
-| Exact-match rate | 0.811 |
-| Quadratic-weighted kappa | 0.792 |
-| Calibration-item accuracy (r9/r10/r11) | 0.911 |
-| Total-score Spearman | 0.915 |
-| Total-score MAE | 1.60 |
+| Exact-match rate | 0.828 |
+| Quadratic-weighted kappa | 0.796 |
+| Calibration-item accuracy (r9/r10/r11) | 0.919 |
+| Total-score Spearman | 0.919 |
+| Total-score MAE | 1.45 |
 
 ## Per-item accuracy
 
 | Item | Judge–expert exact acc |
 |---|---|
-| `r1` | 0.93 |
-| `r2` | 0.80 |
-| `r3` | 0.87 |
-| `r4` | 0.87 |
-| `r5` | 0.67 |
+| `r1` | 0.97 |
+| `r2` | 0.82 |
+| `r3` | 0.88 |
+| `r4` | 0.88 |
+| `r5` | 0.64 |
 | `r6` | 0.67 |
-| `r7` | 0.87 |
-| `r8` | 0.53 |
-| `r9` | 0.87 |
-| `r10` | 0.87 |
+| `r7` | 0.91 |
+| `r8` | 0.61 |
+| `r9` | 0.88 |
+| `r10` | 0.88 |
 | `r11` | 1.00 |
-| `r12` | 0.80 |
+| `r12` | 0.82 |
 
 ## Honest scope
 

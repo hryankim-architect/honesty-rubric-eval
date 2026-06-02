@@ -17,8 +17,9 @@ which conclusion it reaches.
 ## What v0.1 ships
 
 - A **12-item, 0/1/2 rubric** with behavioral anchors (`rubric/honesty_rubric.yaml`).
-- **3 seed items × 3 responses** spanning honesty levels, with **expert gold
-  scores** (`data/items.yaml`, `data/gold_scores.yaml`) — synthetic, clean-room.
+- **15 items (5 per epistemic class) × responses** spanning honesty levels, with
+  **expert gold scores** (`data/items.yaml`, `data/gold_scores.yaml`) — synthetic,
+  clean-room. (v0.1 shipped 3; v0.3 expanded to enable a K-curve.)
 - A **transparent `HeuristicJudge`** (no LLM needed) + a pluggable **`LLMJudge`**
   interface for the real measurement.
 - **Agreement metrics** (`src/honesty_eval/metrics.py`): exact-match,

@@ -3,16 +3,21 @@
 > *Capability portrait / research seed, not a validated benchmark.* Data is
 > synthetic and intentionally small to keep the harness reproducible on a laptop.
 
-- **Benchmark / leaderboard claims.** v0.1 ships 3 seed items (9 response units)
-  with single-scorer gold. The reported agreement numbers are an existence proof
-  that the rubric + judge + metric pipeline runs and is measurable — not a claim
-  about any model's honesty or any judge's general reliability.
+- **Benchmark / leaderboard claims.** v0.3 ships 15 items (5 per epistemic class,
+  ~33 response units) with single-scorer gold. The reported agreement numbers and
+  the K-curve are an existence proof that the rubric + judge + metric + experience
+  pipeline runs and is measurable — not a claim about any model's honesty or any
+  judge's general reliability. 15 items is still small for a powered benchmark
+  (target 25+).
 - **A trustworthy judge by assumption.** The whole point is to *measure* whether a
   judge matches experts. The default `HeuristicJudge` is a transparent baseline,
   not a good judge; treating its scores as ground truth is exactly the error this
   repo exists to avoid.
-- **Single-scorer gold.** A second independent expert scorer (inter-rater
-  agreement) is required before any benchmark claim — deferred to v0.2.
+- **Single-scorer gold.** The inter-rater *harness* exists as of v0.3
+  (`data/gold_scores_b.example.yaml` + `scripts/inter_rater.py`), but a real,
+  independent second scorer has not yet filled it — so the human-human ceiling is
+  unmeasured and the single-scorer bias stands until then. We do not fabricate a
+  second scorer.
 - **Real LLM judge wiring.** The `LLMJudge` interface is provided but no backend
   ships in v0.1 (no API keys / model weights committed). Plugging Ollama / a
   frontier API / the substrate critic is the v0.1→real-eval step.

@@ -1,0 +1,17 @@
+# SECOND-SCORER TEMPLATE (inter-rater).
+# Copy this file to `data/gold_scores_b.yaml` and have a SECOND, INDEPENDENT
+# expert score the same (item, response) units WITHOUT looking at scorer A's
+# scores. Then `python scripts/inter_rater.py` reports the human-human kappa
+# ceiling. Do NOT fill this from scorer A or from a model — independence is the
+# whole point (avoids accumulating one rater's bias).
+#
+# Same format as gold_scores.yaml: 12 ints [r1..r12] per (item, response).
+version: "0.1"
+rubric_order: [r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12]
+
+gold:
+  A_fact:
+    A1: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   # <- replace 0s with scorer B's scores
+    A2: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    A3: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  # ... add the remaining items/responses (B_consensus, C_contested, D-O) the same way.

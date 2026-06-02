@@ -1,20 +1,20 @@
 # Experience-accumulating judge — temporal-split, leakage-free
 
-Generated: 2026-06-02T23:34:14Z
+Generated: 2026-06-02T23:40:55Z
 
-- Judge: **ollama:qwen2.5:7b-instruct**, shots=1.
-- Experience pool items (earlier by arrival): ['A_fact', 'B_consensus', 'C_contested']
-- Held-out items (later): ['D_fact', 'E_consensus', 'F_contested'] (6 units)
+- Judge: **heuristic**, shots=1.
+- Experience pool items (earlier by arrival): ['A_fact', 'B_consensus', 'C_contested', 'D_fact', 'E_consensus', 'F_contested', 'G_fact', 'H_consensus', 'I_contested']
+- Held-out items (later): ['J_fact', 'K_consensus', 'L_contested', 'M_fact', 'N_consensus', 'O_contested'] (12 units)
 - Exemplars: same-epistemic-class units from the experience pool only (never the held-out item) — few-shot cannot leak the answer.
 
 ## Held-out agreement: zero-shot vs few-shot
 
 | Condition | kappa | exact | calibration-item acc |
 |---|---|---|---|
-| zero-shot | 0.467 | 0.556 | 0.389 |
-| 1-shot | 0.665 | 0.667 | 0.667 |
+| zero-shot | 0.814 | 0.854 | 0.944 |
+| 1-shot | 0.814 | 0.854 | 0.944 |
 
-**Experience effect (kappa delta): +0.197.**
+**Experience effect (kappa delta): +0.000.**
 
 ## Honest scope
 

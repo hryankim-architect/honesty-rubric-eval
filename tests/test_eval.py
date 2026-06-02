@@ -75,3 +75,10 @@ def test_retrieve_exemplars_no_leakage():
         ex = retrieve_exemplars(u.item, exp, k=2)
         assert all(e.item.id != u.item.id for e in ex)
         assert all(e.item.epistemic_class == u.item.epistemic_class for e in ex)
+
+
+def test_inter_rater_kappa():
+    a = [[2] * 12, [0, 1, 2] * 4]
+    assert metrics.inter_rater_kappa(a, a) == 1.0          # perfect agreement
+    b = [[0] * 12, [2, 1, 0] * 4]
+    assert metrics.inter_rater_kappa(a, b) < 1.0           # disagreement < 1

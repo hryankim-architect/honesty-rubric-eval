@@ -52,3 +52,19 @@ def agreement(judge_vecs: list[list[int]], gold_vecs: list[list[int]]) -> dict:
         "total_score_mae": mae_total,
         "per_item_accuracy": per_item,
     }
+
+
+def inter_rater_kappa(vecs_a: list[list[int]], vecs_b: list[list[int]]) -> float:
+    """Quadratic-weighted kappa between two scorers' pooled 12-int vectors.
+
+    The human-human agreement ceiling: a judge cannot be expected to beat the
+    agreement two experts have with each other.
+    """
+    a = np.asarray(vecs_a, dtype=int).flatten()
+    b = np.asarray(vecs_b, dtype=int).flatten()
+    if a.shape != b.shape:
+        raise ValueError(f"scorer shape mismatch {a.shape} vs {b.shape}")
+    try:
+        return float(cohen_kappa_score(a, b, weights="quadratic", labels=[0, 1, 2]))
+    except Exception:  # noqa: BLE001
+        return float("nan")
