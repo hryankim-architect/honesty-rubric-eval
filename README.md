@@ -50,6 +50,23 @@ frontier API or the substrate Constitutional-AI critic, pass any
 `complete(prompt) -> str` callable to `honesty_eval.judge.LLMJudge` (see
 `src/honesty_eval/backends.py` for the Ollama example).
 
+## Experience-accumulating judge (v0.2)
+
+Does accumulated expert-scored experience help the judge? `run_experience_eval.py`
+does an **item-level temporal split** (earlier items = experience pool, later =
+held-out), retrieves same-class past exemplars, and compares **zero-shot vs
+few-shot** held-out agreement — **leakage-free** (exemplars never include the
+held-out item; they carry only human gold, never the judge's own outputs).
+
+```bash
+python scripts/run_experience_eval.py --judge ollama --model qwen2.5:7b-instruct --shots 1
+```
+
+The kappa delta (few-shot − zero-shot) is the experience effect; a null is a valid
+finding. With the heuristic judge the delta is 0 by construction (it ignores
+exemplars) — the harness is the deliverable. See
+[`experience-accumulating-judge`](docs/what-is-out-of-scope.md) notes.
+
 ## Honest scope
 
 This is a **seed / methodology demo**, not a benchmark — 3 items, single-scorer

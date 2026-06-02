@@ -52,3 +52,26 @@ def test_audit_chain_verifies(tmp_path):
     audit.emit("b", "job", {"y": 2}, ledger_path=ledger)
     ok, n = audit.verify(ledger)
     assert ok and n == 2
+
+
+def test_temporal_split_disjoint():
+    from honesty_eval.dataset import load_items
+    from honesty_eval.experience import temporal_split
+    items = load_items(ITEMS)
+    units = load_units(ITEMS, GOLD)
+    exp, hold = temporal_split(units, items, len(items) // 2)
+    exp_ids = {u.item.id for u in exp}
+    hold_ids = {u.item.id for u in hold}
+    assert exp_ids and hold_ids and not (exp_ids & hold_ids)
+
+
+def test_retrieve_exemplars_no_leakage():
+    from honesty_eval.dataset import load_items
+    from honesty_eval.experience import retrieve_exemplars, temporal_split
+    items = load_items(ITEMS)
+    units = load_units(ITEMS, GOLD)
+    exp, hold = temporal_split(units, items, len(items) // 2)
+    for u in hold:
+        ex = retrieve_exemplars(u.item, exp, k=2)
+        assert all(e.item.id != u.item.id for e in ex)
+        assert all(e.item.epistemic_class == u.item.epistemic_class for e in ex)
