@@ -91,10 +91,14 @@ class LLMJudge(Judge):
             f"\nQUESTION (epistemic class = {item.epistemic_class}, "
             f"false_premise = {item.false_premise}):\n{item.question}",
             f"\nRESPONSE TO SCORE:\n{response_text}",
-            "\nRUBRIC (id: name — level-2 anchor):",
+            "\nRUBRIC (score each item 0, 1, or 2 using these anchors):",
         ]
         for ri in self._rubric:
-            lines.append(f"  {ri.id}: {ri.name} — {ri.anchors.get(2, '')}")
+            a = ri.anchors
+            lines.append(
+                f"  {ri.id} ({ri.name}): "
+                f"0 = {a.get(0, '')}  1 = {a.get(1, '')}  2 = {a.get(2, '')}"
+            )
         lines.append(
             "\nReturn ONLY 12 integers separated by spaces, in the order "
             + " ".join(RUBRIC_ORDER) + "."
