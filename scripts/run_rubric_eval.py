@@ -19,8 +19,9 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from honesty_eval import RUBRIC_ORDER, audit, metrics  # noqa: E402
+from honesty_eval.backends import ollama_complete  # noqa: E402
 from honesty_eval.dataset import load_units  # noqa: E402
-from honesty_eval.judge import HeuristicJudge  # noqa: E402
+from honesty_eval.judge import HeuristicJudge, LLMJudge  # noqa: E402
 from honesty_eval.rubric import load_rubric  # noqa: E402
 
 AUDIT = REPO / "audit"
@@ -29,21 +30,22 @@ JOB_ID = "honesty-rubric-eval-v0.1"
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--judge", choices=["heuristic", "llm"], default="heuristic")
+    ap.add_argument("--judge", choices=["heuristic", "ollama"], default="heuristic")
+    ap.add_argument("--model", default="qwen2.5:7b-instruct",
+                    help="Ollama model tag (used when --judge ollama)")
+    ap.add_argument("--host", default="http://localhost:11434")
     args = ap.parse_args()
-
-    if args.judge == "llm":
-        sys.stderr.write(
-            "ERROR: the LLM judge needs a backend. Wire a `complete(prompt)->str` "
-            "callable (Ollama / API / substrate critic) into honesty_eval.judge."
-            "LLMJudge and call it here. v0.1 ships only the heuristic baseline.\n"
-        )
-        return 1
 
     rubric = load_rubric(REPO / "rubric" / "honesty_rubric.yaml")
     units = load_units(REPO / "data" / "items.yaml", REPO / "data" / "gold_scores.yaml")
-    judge = HeuristicJudge()
-    print(f"=== honesty-rubric eval (judge={judge.name}, n_units={len(units)}, "
+
+    if args.judge == "ollama":
+        judge: HeuristicJudge | LLMJudge = LLMJudge(ollama_complete(args.model, args.host), rubric)
+        judge_label = f"ollama:{args.model}"
+    else:
+        judge = HeuristicJudge()
+        judge_label = judge.name
+    print(f"=== honesty-rubric eval (judge={judge_label}, n_units={len(units)}, "
           f"{len(rubric)} rubric items) ===")
 
     judge_vecs, gold_vecs = [], []
@@ -61,6 +63,18 @@ def main() -> int:
     print(f"  calibration-item accuracy : {m['calibration_item_accuracy']:.3f}  (r9/r10/r11)")
     print(f"  total-score Spearman / MAE: {m['total_score_spearman']:.3f} / {m['total_score_mae']:.2f}")
 
+    if isinstance(judge, LLMJudge):
+        scope_note = (
+            f"The judge is {judge_label} (an LLM): these numbers are that judge's "
+            "agreement with expert gold — the real scalable-oversight signal."
+        )
+    else:
+        scope_note = (
+            "The HeuristicJudge is a transparent rule-based baseline — these numbers "
+            "measure the baseline, not an LLM; plug an LLM judge (`--judge ollama`) "
+            "for the real measurement."
+        )
+
     AUDIT.mkdir(exist_ok=True)
     per_item = "\n".join(
         f"| `{r}` | {m['per_item_accuracy'][r]:.2f} |" for r in RUBRIC_ORDER
@@ -69,7 +83,7 @@ def main() -> int:
     (AUDIT / "rubric_eval.md").write_text(
         "# Honesty-rubric eval — judge vs expert agreement\n\n"
         f"Generated: {ts}\n\n"
-        f"- Judge: **{judge.name}** (v0.1 transparent baseline; LLM judge is pluggable).\n"
+        f"- Judge: **{judge_label}** (heuristic baseline ships; LLM judge pluggable via --judge ollama).\n"
         f"- Units: {m['n_units']} (item × response), 12 rubric items each.\n\n"
         "## Agreement (the scalable-oversight metric)\n\n"
         "| Metric | Value |\n|---|---|\n"
@@ -81,19 +95,16 @@ def main() -> int:
         "## Per-item accuracy\n\n| Item | Judge–expert exact acc |\n|---|---|\n"
         + per_item + "\n\n"
         "## Honest scope\n\n"
-        "The HeuristicJudge is a transparent rule-based baseline — these numbers "
-        "measure *the baseline*, not an LLM. The point of v0.1 is that the harness "
-        "+ agreement metric run end-to-end; the real scalable-oversight question "
-        "(can an LLM judge match experts, especially on the contested-calibration "
-        "item r11?) is answered by plugging in an LLM judge. Gold is single-scorer "
-        "on 3 seed items — a second scorer and 15-25 items are required before any "
-        "benchmark claim (see `docs/what-is-out-of-scope.md`).\n\n"
+        f"{scope_note} The contested-calibration item (r11) is the keystone "
+        "scalable-oversight question. Gold is single-scorer on 3 seed items — a "
+        "second scorer and 15-25 items are required before any benchmark claim "
+        "(see `docs/what-is-out-of-scope.md`).\n\n"
         "## Reproduce\n\n```bash\npython scripts/run_rubric_eval.py\n```\n"
     )
     print(f"\nWrote {AUDIT / 'rubric_eval.md'}")
 
     audit.emit("rubric_eval", JOB_ID, fields={
-        "judge": judge.name, "n_units": m["n_units"],
+        "judge": judge_label, "n_units": m["n_units"],
         "exact_match_rate": m["exact_match_rate"],
         "quadratic_weighted_kappa": m["quadratic_weighted_kappa"],
         "calibration_item_accuracy": m["calibration_item_accuracy"],

@@ -36,11 +36,19 @@ pytest -q
 
 ## The real measurement (plug an LLM judge)
 
-`HeuristicJudge` is only a baseline. Implement a `complete(prompt) -> str` callable
-(Ollama, a frontier API, or the substrate Constitutional-AI critic), wrap it with
-`honesty_eval.judge.LLMJudge`, and score the same units — then the agreement
-numbers answer the scalable-oversight question: *does the LLM judge match
-experts, especially on the contested-calibration item (r11)?*
+`HeuristicJudge` is only a baseline. A local-Ollama backend ships built in:
+
+```bash
+# requires a local Ollama server with the model pulled (e.g. `ollama pull qwen2.5:7b-instruct`)
+python scripts/run_rubric_eval.py --judge ollama --model qwen2.5:7b-instruct
+```
+
+This scores the same units with the LLM judge (temperature 0) and reports the
+same agreement metrics — answering the scalable-oversight question: *does the LLM
+judge match experts, especially on the contested-calibration item (r11)?* For a
+frontier API or the substrate Constitutional-AI critic, pass any
+`complete(prompt) -> str` callable to `honesty_eval.judge.LLMJudge` (see
+`src/honesty_eval/backends.py` for the Ollama example).
 
 ## Honest scope
 

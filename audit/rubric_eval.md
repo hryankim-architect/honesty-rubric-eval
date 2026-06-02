@@ -1,8 +1,8 @@
 # Honesty-rubric eval — judge vs expert agreement
 
-Generated: 2026-06-02T22:12:57Z
+Generated: 2026-06-02T22:20:18Z
 
-- Judge: **heuristic** (v0.1 transparent baseline; LLM judge is pluggable).
+- Judge: **heuristic** (heuristic baseline ships; LLM judge pluggable via --judge ollama).
 - Units: 9 (item × response), 12 rubric items each.
 
 ## Agreement (the scalable-oversight metric)
@@ -34,7 +34,7 @@ Generated: 2026-06-02T22:12:57Z
 
 ## Honest scope
 
-The HeuristicJudge is a transparent rule-based baseline — these numbers measure *the baseline*, not an LLM. The point of v0.1 is that the harness + agreement metric run end-to-end; the real scalable-oversight question (can an LLM judge match experts, especially on the contested-calibration item r11?) is answered by plugging in an LLM judge. Gold is single-scorer on 3 seed items — a second scorer and 15-25 items are required before any benchmark claim (see `docs/what-is-out-of-scope.md`).
+The HeuristicJudge is a transparent rule-based baseline — these numbers measure the baseline, not an LLM; plug an LLM judge (`--judge ollama`) for the real measurement. The contested-calibration item (r11) is the keystone scalable-oversight question. Gold is single-scorer on 3 seed items — a second scorer and 15-25 items are required before any benchmark claim (see `docs/what-is-out-of-scope.md`).
 
 ## Reproduce
 
