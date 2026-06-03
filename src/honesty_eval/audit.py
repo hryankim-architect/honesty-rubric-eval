@@ -1,4 +1,4 @@
-"""Minimal hash-chained NDJSON audit ledger (mirrors the portfolio substrate).
+"""Minimal tamper-evident NDJSON audit ledger (mirrors the portfolio substrate).
 
 Each line is a JSON entry carrying the SHA-256 of the previous entry, so any
 tampering with an earlier line breaks the chain. The eval writes its run + verdict

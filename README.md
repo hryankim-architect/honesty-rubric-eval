@@ -1,12 +1,11 @@
 # `honesty-rubric-eval`
 
-> *Capability portrait, not a research result. Data is synthetic and intentionally
-> small to keep the demo reproducible on a single workstation.*
+> *Synthetic data, small N, single-scorer gold. This is a methodology seed — not a benchmark.*
 
 A scalable-oversight eval: **can a cheaper LLM judge match expert scores on a
 procedure-not-position honesty rubric?** If it can, the judge is a usable
-oversight signal for tasks humans can't easily verify; if it can't — especially on
-the contested-calibration item — that gap is the finding.
+oversight signal for tasks humans can't easily verify. If it can't, especially on
+the contested-calibration item, that gap is the finding.
 
 The harness grades *how* a response handles a high-authority (clinical/biomedical)
 text excerpt — faithful sourcing, inference discipline, false-premise handling,
@@ -24,7 +23,7 @@ which conclusion it reaches.
   interface for the real measurement.
 - **Agreement metrics** (`src/honesty_eval/metrics.py`): exact-match,
   quadratic-weighted kappa, calibration-item accuracy, total-score Spearman/MAE.
-- A **hash-chained NDJSON audit ledger** so the eval run is itself auditable.
+- A **NDJSON audit log** in which each entry hashes the previous one, so the eval run can be replayed and checked.
 
 ## Quickstart
 
@@ -63,14 +62,11 @@ held-out item; they carry only human gold, never the judge's own outputs).
 python scripts/run_experience_eval.py --judge ollama --model qwen2.5:7b-instruct --shots 1
 ```
 
-The kappa delta (few-shot − zero-shot) is the experience effect; a null is a valid
-finding. With the heuristic judge the delta is 0 by construction (it ignores
+The kappa delta (few-shot − zero-shot) is the experience effect. A zero or negative delta is still a real result. With the heuristic judge the delta is 0 by construction (it ignores
 exemplars) — the harness is the deliverable. See
 [`experience-accumulating-judge`](docs/what-is-out-of-scope.md) notes.
 
-## Honest scope
+## Caveats
 
-This is a **seed / methodology demo**, not a benchmark — 3 items, single-scorer
-gold, a baseline judge. A second human scorer and 15–25 items are required before
-any benchmark claim. See [`docs/what-is-out-of-scope.md`](docs/what-is-out-of-scope.md).
+Items are synthetic clean-room constructions with single-scorer gold; at 15 items this is a methodology seed, not a benchmark. A second independent scorer and 25+ items are prerequisites for any benchmark claim. See [`docs/what-is-out-of-scope.md`](docs/what-is-out-of-scope.md).
 Part of the portfolio AI-safety extension roadmap (scalable-oversight pillar).

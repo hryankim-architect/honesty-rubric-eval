@@ -16,9 +16,9 @@ Generated: 2026-06-02T23:40:55Z
 
 **Experience effect (kappa delta): +0.000.**
 
-## Honest scope
+## Caveats
 
-Heuristic judge ignores exemplars (delta 0 by construction) — run with `--judge ollama` for the real signal. The corpus is small, so a single split is illustrative; the deliverable is the **leakage-free harness** (item-level temporal split + same-class retrieval + no-self-exemplar assertion). A real signal needs the 15-25-item corpus + a second scorer; exemplars carry only human expert gold (never the judge's own outputs) to avoid feedback-loop contamination. See `docs/what-is-out-of-scope.md`.
+The heuristic judge ignores exemplars, so delta 0 here is by construction — run with `--judge ollama` for a real signal. The corpus is small; one split is illustrative, not conclusive. The deliverable is the **leakage-free harness**: item-level temporal split, same-class retrieval, no-self-exemplar assertion. A real signal requires the 15–25-item corpus plus a second scorer. Exemplars carry only human expert gold, never the judge's own outputs, to prevent feedback-loop contamination. See `docs/what-is-out-of-scope.md`.
 
 ## Reproduce
 

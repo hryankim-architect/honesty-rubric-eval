@@ -1,7 +1,6 @@
 # What is out of scope (`honesty-rubric-eval`)
 
-> *Capability portrait / research seed, not a validated benchmark.* Data is
-> synthetic and intentionally small to keep the harness reproducible on a laptop.
+> *Synthetic data, small N, methodology seed — not a validated benchmark.* The harness runs on a laptop; nothing here claims production scale.
 
 - **Benchmark / leaderboard claims.** v0.3 ships 15 items (5 per epistemic class,
   ~33 response units) with single-scorer gold. The reported agreement numbers and
