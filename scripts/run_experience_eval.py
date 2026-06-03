@@ -137,7 +137,7 @@ def main() -> int:
         f"| zero-shot | {mz['quadratic_weighted_kappa']:.3f} | {mz['exact_match_rate']:.3f} | {mz['calibration_item_accuracy']:.3f} |\n"
         f"| {args.shots}-shot | {mf['quadratic_weighted_kappa']:.3f} | {mf['exact_match_rate']:.3f} | {mf['calibration_item_accuracy']:.3f} |\n\n"
         f"**Experience effect (kappa delta): {dk:+.3f}.**\n\n"
-        "## Honest scope\n\n"
+        "## Scope and limits\n\n"
         "Heuristic judge ignores exemplars (delta 0 by construction) — run with "
         "`--judge ollama` for the real signal. The corpus is small, so a single "
         "split is illustrative; the deliverable is the **leakage-free harness** "

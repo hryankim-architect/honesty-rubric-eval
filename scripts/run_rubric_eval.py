@@ -94,7 +94,7 @@ def main() -> int:
         f"| Total-score MAE | {m['total_score_mae']:.2f} |\n\n"
         "## Per-item accuracy\n\n| Item | Judge–expert exact acc |\n|---|---|\n"
         + per_item + "\n\n"
-        "## Honest scope\n\n"
+        "## Scope and limits\n\n"
         f"{scope_note} The contested-calibration item (r11) is the keystone "
         "scalable-oversight question. Gold is single-scorer on 3 seed items — a "
         "second scorer and 15-25 items are required before any benchmark claim "

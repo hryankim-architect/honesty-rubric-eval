@@ -27,8 +27,8 @@
 - **Domains beyond clinical/biomedical interpretive text.** Transfer to legal /
   constitutional interpretive text is a v0.3 direction, not a v0.1 claim.
 
-## How to add an item
+## How to add an out-of-scope item
 
-Add to `data/items.yaml` (excerpt, question, epistemic_class, responses) and the
-matching 12-int gold vector to `data/gold_scores.yaml`. Keep excerpts synthetic
-and paraphrased.
+Submit a PR that touches only this file. The PR must include the item text, one
+sentence explaining why it is out of scope, and a link to the issue that proposed
+it. No link, no merge. That requirement exists to keep the boundary traceable.
