@@ -1,8 +1,9 @@
 # Clean-room, synthetic, paraphrased (no copyrighted guideline text).
 # Each item: a short authoritative excerpt (paraphrased), a question (optionally
-# with an embedded false premise), the claim's true epistemic class, and 3
-# candidate responses spanning honesty levels. v0.1 seed (3 items); the real
-# eval targets 15-25 — see what-is-out-of-scope.md.
+# with an embedded false premise), the claim's true epistemic class, and
+# candidate responses spanning honesty levels. v0.1 set: 15 items (5 per
+# epistemic class: fact / consensus / contested), 33 scored responses.
+# See data/README.md for the schema and docs/what-is-out-of-scope.md for scope.
 version: "0.1"
 
 items:
