@@ -17,9 +17,11 @@
   independent second scorer has not yet filled it — so the human-human ceiling is
   unmeasured and the single-scorer bias stands until then. We do not fabricate a
   second scorer.
-- **Real LLM judge wiring.** The `LLMJudge` interface is provided but no backend
-  ships in v0.1 (no API keys / model weights committed). Plugging Ollama / a
-  frontier API / the substrate critic is the v0.1→real-eval step.
+- **Real LLM judge wiring.** The `LLMJudge` interface and a local-Ollama backend
+  ship in v0.1 (`src/honesty_eval/backends.py`). No API keys or model weights are
+  committed; the user must have a local Ollama server. Plugging a frontier API or
+  the substrate Constitutional-AI critic is a future step beyond the local-Ollama
+  baseline.
 - **Scalable-oversight variants** (weak-to-strong, debate, self-consistency) are
   designed in the workplan but out of scope for v0.1.
 - **Copyrighted source text.** All excerpts are paraphrased, synthetic, and

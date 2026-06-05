@@ -32,9 +32,9 @@ Generated: 2026-06-02T23:40:54Z
 | `r11` | 1.00 |
 | `r12` | 0.82 |
 
-## Caveats
+## Scope and limits
 
-The HeuristicJudge is a rule-based baseline. These numbers measure that baseline, not an LLM. Plug in an LLM judge (`--judge ollama`) for the real measurement. The contested-calibration item (r11) is the keystone scalable-oversight question. Gold is single-scorer; a second scorer and 15–25 items are required before any benchmark claim (see `docs/what-is-out-of-scope.md`).
+The HeuristicJudge is a transparent rule-based baseline — these numbers measure the baseline, not an LLM; plug an LLM judge (`--judge ollama`) for the real measurement. The contested-calibration item (r11) is the keystone scalable-oversight question. Gold is single-scorer on 33 units — a second scorer and 15–25 items are required before any benchmark claim (see `docs/what-is-out-of-scope.md`).
 
 ## Reproduce
 
