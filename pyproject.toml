@@ -1,7 +1,7 @@
 [project]
 name = "honesty-rubric-eval"
-version = "0.1.0"
-description = "Scalable-oversight eval: does an LLM judge match expert scores on a procedure-not-position honesty rubric?"
+version = "0.2.0"
+description = "Scalable-oversight eval: does an LLM judge match expert scores on a procedure-not-position honesty rubric? Reports quadratic-weighted κ with a bootstrap CI and a per-epistemic-class (fact/consensus/contested) breakdown."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "H. Ryan Kim" }]

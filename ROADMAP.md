@@ -27,6 +27,21 @@ honesty rubric, with the contested-calibration item (r11) as the keystone.
 
 ---
 
+## v0.2 — uncertainty + per-class breakdown (shipped: tag `v0.2` + Release)
+
+**Goal**: report the headline agreement as an *estimate with uncertainty* and expose
+where it is weak, matching the v0.2 depth of the sibling eval repos.
+
+- [x] **Bootstrap CI** on the quadratic-weighted κ (`src/honesty_eval/bootstrap.py`):
+  percentile interval over resampled units, deterministic, NaN resamples dropped
+- [x] **Per-epistemic-class agreement** (fact / consensus / contested) so a pooled κ
+  cannot hide a class-specific weak spot (`metrics.per_class_agreement`)
+- [x] Runner + audit `rubric_eval.md` + ledger now carry the κ CI and per-class κ
+- [x] Tests for the bootstrap (determinism, CI brackets point, NaN handling) and the
+  per-class partition; ruff + CI green
+
+---
+
 ## Planned
 
 Benchmark prerequisites (the first two gate any benchmark claim):

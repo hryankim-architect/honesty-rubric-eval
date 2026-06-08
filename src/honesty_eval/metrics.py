@@ -1,11 +1,31 @@
 """Judge-vs-expert agreement metrics (the scalable-oversight deliverable)."""
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 from scipy.stats import spearmanr
+from sklearn.exceptions import UndefinedMetricWarning
 from sklearn.metrics import cohen_kappa_score
 
 from honesty_eval import CALIBRATION_ITEMS, RUBRIC_ORDER
+
+
+def quadratic_weighted_kappa(judge_vecs: list[list[int]], gold_vecs: list[list[int]]) -> float:
+    """Quadratic-weighted Cohen's κ over flattened (judge, gold) rubric scores.
+
+    Returns NaN on a degenerate label set (e.g. a bootstrap resample that is all one
+    score) — that case is expected during bootstrapping, so the sklearn
+    "undefined metric" warning it raises is silenced here and callers drop the NaN.
+    """
+    jf = np.asarray(judge_vecs, dtype=int).flatten()
+    gf = np.asarray(gold_vecs, dtype=int).flatten()
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UndefinedMetricWarning)
+            return float(cohen_kappa_score(gf, jf, weights="quadratic", labels=[0, 1, 2]))
+    except Exception:  # noqa: BLE001 — degenerate label set on older sklearn
+        return float("nan")
 
 
 def agreement(judge_vecs: list[list[int]], gold_vecs: list[list[int]]) -> dict:
@@ -21,10 +41,7 @@ def agreement(judge_vecs: list[list[int]], gold_vecs: list[list[int]]) -> dict:
 
     jf, gf = j.flatten(), g.flatten()
     exact = float((jf == gf).mean())
-    try:
-        kappa = float(cohen_kappa_score(gf, jf, weights="quadratic", labels=[0, 1, 2]))
-    except Exception:  # noqa: BLE001 — degenerate label set
-        kappa = float("nan")
+    kappa = quadratic_weighted_kappa(judge_vecs, gold_vecs)
 
     # Per-item exact accuracy.
     per_item = {
@@ -52,6 +69,30 @@ def agreement(judge_vecs: list[list[int]], gold_vecs: list[list[int]]) -> dict:
         "total_score_mae": mae_total,
         "per_item_accuracy": per_item,
     }
+
+
+def per_class_agreement(
+    classes: list[str], judge_vecs: list[list[int]], gold_vecs: list[list[int]]
+) -> dict[str, dict]:
+    """Agreement split by epistemic class (fact / consensus / contested).
+
+    The keystone scalable-oversight question is whether a judge holds up on
+    *contested* items, where there is no single defensible position — so a single
+    pooled κ can hide a weak spot. Each class reports its own n / exact-match / κ.
+    """
+    out: dict[str, dict] = {}
+    for cls in sorted(set(classes)):
+        idx = [i for i, c in enumerate(classes) if c == cls]
+        jv = [judge_vecs[i] for i in idx]
+        gv = [gold_vecs[i] for i in idx]
+        jf = np.asarray(jv, dtype=int).flatten()
+        gf = np.asarray(gv, dtype=int).flatten()
+        out[cls] = {
+            "n_units": len(idx),
+            "exact_match_rate": float((jf == gf).mean()) if len(idx) else float("nan"),
+            "quadratic_weighted_kappa": quadratic_weighted_kappa(jv, gv),
+        }
+    return out
 
 
 def inter_rater_kappa(vecs_a: list[list[int]], vecs_b: list[list[int]]) -> float:

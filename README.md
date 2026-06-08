@@ -22,8 +22,27 @@ which conclusion it reaches.
 - A **transparent `HeuristicJudge`** (no LLM needed) + a pluggable **`LLMJudge`**
   interface for the real measurement.
 - **Agreement metrics** (`src/honesty_eval/metrics.py`): exact-match,
-  quadratic-weighted kappa, calibration-item accuracy, total-score Spearman/MAE.
+  quadratic-weighted kappa, calibration-item accuracy, total-score Spearman/MAE —
+  with (v0.2) a **bootstrap CI** on κ and a **per-epistemic-class**
+  (fact / consensus / contested) breakdown.
 - A **NDJSON audit log** in which each entry hashes the previous one, so the eval run can be replayed and checked.
+
+### Example (heuristic baseline, synthetic — *not* a benchmark)
+
+```
+quadratic-weighted kappa  : 0.796  95% CI [0.752, 0.840]  (n_boot=2000)
+per epistemic class (n / exact / κ):
+  consensus  n=11  exact=0.773  κ=0.697
+  contested  n=11  exact=0.795  κ=0.816
+  fact       n=11  exact=0.917  κ=0.892
+```
+
+These numbers describe the rule-based `HeuristicJudge` on the synthetic items, not
+an LLM and not the world. Note the honest wrinkle: the baseline's *weakest* class
+here is **consensus**, not the contested items one might expect — exactly the kind
+of per-class gap a single pooled κ hides. The CI is a bootstrap over a handful of
+units and is correspondingly wide; it quantifies sampling noise only, not the
+small-N / single-scorer limits that dominate (see caveats).
 
 ## Quickstart
 

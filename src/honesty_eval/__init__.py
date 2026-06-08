@@ -1,7 +1,10 @@
 """honesty-rubric-eval: does an LLM judge match expert scores on a
-procedure-not-position honesty rubric? (scalable-oversight eval, v0.1)."""
+procedure-not-position honesty rubric? (scalable-oversight eval, v0.2).
 
-__version__ = "0.1.0"
+v0.2 adds a bootstrap CI on the headline quadratic-weighted κ and a per-epistemic-
+class (fact / consensus / contested) agreement breakdown."""
+
+__version__ = "0.2.0"
 
 # Canonical rubric item order, also the order used in data/gold_scores.yaml.
 RUBRIC_ORDER = (
