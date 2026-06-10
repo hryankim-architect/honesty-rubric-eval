@@ -12,3 +12,5 @@ Generated: 2026-06-02T23:43:10Z
 | 3 | 0.612 | 0.792 | 0.861 |
 
 Monotone rise = more accumulated experience helps; plateau = saturation; drop = stale / over-anchoring. Small corpus -> illustrative, not conclusive (see `docs/what-is-out-of-scope.md`).
+
+**Reproducibility:** this κ 0.407 → 0.612 curve is a *captured live run* of `ollama:qwen2.5:7b-instruct` — it is **not** clone-and-run reproducible offline. The default (heuristic) judge ignores exemplars, so re-running `run_experience_eval.py --kcurve` without a live Ollama model produces a **flat κ by construction** and will overwrite this file; restore it from git if so. Any "κ 0.41 → 0.61" claim refers to this live-7B run, not the offline heuristic baseline (whose headline is the κ 0.796 in `rubric_eval.md`).
